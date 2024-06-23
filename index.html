@@ -6,20 +6,17 @@
   <script id="challenge">
     // 👉 CHALLENGE 1
     function profileActivation(profile, reason) {
-      let result
-      if (profile.active === false) {
-        result = {}
-        result.active = true
-      } 
-      else if ((profile.active === true) && (reason === undefined)) {
-        result = "confirm status manually"
-      } 
-      else if (profile.active === true) {
-        result = {}
-        result.active = false
-        result.reason = reason
+      if (profile.active == true && !reason) {
+        return "confirm status manually";
+      } else {
+        profile.active = !profile.active;
+        if (profile.active) {
+          profile = {active: true}
+        } else {
+          profile.reason = reason;
+        }
+        return profile;
       }
-      return result
     }
     
     // x1y1, x2y1, x3y1
@@ -28,124 +25,110 @@
     // result = "🟥 💀" result = "🟦 🥳"
 
     // 👉 CHALLENGE 2
-        function mineSweeper(grid, x, y) {
-      let result
-      if ((x < 1) || (x > 3) || (y < 1) || (y > 3)) {
-        result = "invalid coordinates"
+    function mineSweeper(grid, x, y) {
+      //console.log(grid);
+      if (x > 3 || x < 1 || y > 3 || y < 1) {
+        return "invalid coordinates"
       } else {
-        let realX = x - 1
-        //mudkip is all y=1
-        let mudkip = grid[0]
-        let marshtomp = grid[1]
-        let swampert = grid[2]
-        if (y === 1) {
-          if (mudkip[realX] === "🟥") {
-            result = "🟥 💀"
-          } else {
-            result = "🟦 🥳"
-          }
-        } else if (y === 2) {
-          if (marshtomp[realX] === "🟥") {
-            result = "🟥 💀"
-          } else {
-            result = "🟦 🥳"
-          }
+        x = x-1;
+        y = y-1;
+        let spot = grid[y][x];
+        if (spot == "🟥") {
+          return "🟥 💀";
         } else {
-          if (swampert[realX] === "🟥") {
-            result = "🟥 💀"
+          return "🟦 🥳";
+        }
+      }
+    }
+
+    // 👉 CHALLENGE 3
+
+       function booleanize(obj) {
+        let newObj = {};
+        //console.log(obj);
+        for (let prop in obj) {
+          if (prop.length > 9) {
+            return "shorten all prop names to 9 chars or less";
+          } else if (obj[prop] === null) {
+            // do nothing so that it isn't copied into newObj
+          } else if (obj[prop] === 1) {
+            newObj[prop] = true;
+          } else if (obj[prop] === 0) {
+            newObj[prop] = false;
           } else {
-            result = "🟦 🥳"
+            newObj[prop] = obj[prop];
           }
         }
-        
-      }
-      return result
-    }
-    // 👉 CHALLENGE 3
-       function booleanize(obj) {
-      let result = {}
-      for (let prop in obj) {
-        if (prop.length > 9) {
-          result = "shorten all prop names to 9 chars or less"
-        }
-        else if (typeof(obj[prop]) === "number") {
-          result[prop] = Boolean(obj[prop])
-        }
-        else if (typeof(obj[prop]) === "string") {
-          result[prop] = obj[prop]
-        }
-      }
-      return result
+        return newObj;
     }
 
     // 👉 CHALLENGE 4
        function scrub(text, forbidden) {
-         let result = ""
-         let reassemble = []
-         let splitText = text.split(" ")
-         for (let idx in splitText) {
-          let censored
-          if (forbidden.length === 0) {
-            result = text
-            return result
-            break
+        let words = text.split(" ");
+        let newWords = [];
+        words.forEach(word => {
+          let redacted = false;
+          forbidden.forEach(exile => {
+            if (word == exile) {
+              redacted = true;
+            }
+          })
+          if (redacted) {
+            let censor = [];
+            for (let i = 0; i < word.length; i++) {
+              censor.push("x");
+            }
+            censor = censor.join("");
+            newWords.push(censor);
+          } else {
+            newWords.push(word);
           }
-          else {
-           for (let index in forbidden) {
-             if (splitText[idx] === forbidden[index]) {
-              let exiled = forbidden[index] 
-              let beginning = 0
-              let replacement = []
-              while (beginning < exiled.length) {
-                replacement.push("x")
-                beginning ++
-              }
-              censored = replacement.join("")
-               break
-             } else {
-               censored = splitText[idx]
-             }
-           }
-          }
-          reassemble.push(censored)
-         }
-         result = reassemble.join(" ")
-         return result
+        })
+        return newWords.join(" ");
        }
 
     // 👉 CHALLENGE 5 (bonus, NOT graded)
     function normalizePhoneNumber(num) {
-      let result
-      let phoneNumber = ["("]
-      if ((typeof num !== "string") || (num.length !== 10)) {
-        result = "The entry is not a phone number"
+      if (num.length != 10) {
+        return "number must have 10 digits";
       }
-      else {
-        let numArray = num.split("")
-        function digitTransfer() {
-          phoneNumber.push(numArray.shift())
+      num = String(num);
+      let phone = [];
+      let i = 0;
+      let numI = 0;
+      while (i < 14) {
+        if (i == 0) {
+          phone.push("(");
+        } else if (i == 4) {
+          phone.push(")");
+          phone.push(" ");
+        } else if (i == 8) {
+          phone.push("-");
+        } else {
+          phone.push(num[numI]);
+          numI++;
         }
-        digitTransfer()
-        digitTransfer()
-        digitTransfer()
-        phoneNumber.push(") ")
-        digitTransfer()
-        digitTransfer()
-        digitTransfer()
-        phoneNumber.push("-")
-        digitTransfer()
-        digitTransfer()
-        digitTransfer()
-        digitTransfer()
-        result = phoneNumber.join("")
+        i++;
       }
-     return result
+      //console.log(phone.join(""));
+      return phone.join("");
     }
 
     // 👉 CHALLENGE 6 (bonus, NOT graded)
     function diceRolls() {
-
+      let rolls = [];
+      let count = rolls.length;
+      while (count < 3 || rolls[count-3] != 6 || rolls[count-2] != 6 || rolls[count-1] != 6) {
+        let number = Math.floor(Math.random() * 6 + 1);
+        rolls.push(number);
+        count = rolls.length;
+      }
+      console.log(rolls);
+      //console.log(rolls[count-3], rolls[count-2], rolls[count-1])
+      return count;
     }
+
+    console.log(diceRolls());
 
     // 🧪 DO NOT make any changes below this line ===================
     globalThis.challengeVersion = 1
